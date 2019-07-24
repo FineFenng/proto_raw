@@ -34,7 +34,7 @@ struct address_t;
 class reactor;
 
 
-class pesudo_tcp_server
+class transmit_server
 {
     TcpServer server_;
 
@@ -42,20 +42,24 @@ private:
 
 
 public:
-    explicit pesudo_tcp_server(EventLoop* loop, const InetAddress& addr)
-            : server_(loop, addr, "pesudo_tcp_server", TcpServer::kReusePort)
+    explicit transmit_server(EventLoop* loop, const InetAddress& addr)
+            : server_(loop, addr, "transmit_server", TcpServer::kReusePort)
     {
-        server_.setMessageCallback(std::bind(&pesudo_tcp_server::on_readable,
-                                             this,
-                                             std::placeholders::_1,
-                                             std::placeholders::_2,
-                                             std::placeholders::_3));
+        server_.setMessageCallback(std::bind(&transmit_server::on_readable, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
 
 
     }
 
+
+
     void on_readable(const TcpConnectionPtr& conn, Buffer* buf, Timestamp ts)
     {
+
+
+
+
+
 
 
 

@@ -13,6 +13,19 @@
 
 #include <cstring>
 
+#define KCP_MTU (MTU - 40 - 4 - 20)
+#define BUFFER_SIZE (KCP_MTU - 30)
+#define KCP_MAX_WND_SIZE 1024
+#define MAX_CONNECTIONS 8192
+#define MAX_QUEUE_LENGTH 5000
+#define HEART_BEAT_TIMEOUT 7
+#define KCP_RECV_TIMEOUT 30
+
+#define CONNECTION_CONNECT 1
+#define CONNECTION_PUSH 2
+#define CONNECTION_CLOSE 3
+#define CONNECTION_NOP 0
+
 struct packet_meta_t {
     char     dst_ip[120];
     char     src_ip[120];
@@ -27,6 +40,27 @@ struct frame_header_t
     uint32_t len;
 };
 
+struct pesudo_tcphrd
+{
+
+};
+
+
+
+struct pesudo_iphdr
+{
+
+};
+
+
+
+
+void fe()
+{
+
+
+
+}
 
 
 
@@ -43,6 +77,7 @@ void build_packet_meta(const address_t& dst_addr,
     strcpy(meta->src_ip, src_addr.ip);
     meta->dst_port = htons(dst_addr.port);
     meta->src_port = htons(dst_addr.port);
+
 }
 
 
