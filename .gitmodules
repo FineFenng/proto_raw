@@ -1,6 +1,3 @@
-[submodule "3rd/kcb_"]
-	path = 3rd/kcb_
-	url = https://github.com/skywind3000/kcb_.git
 [submodule "3rd/muduo"]
 	path = 3rd/muduo
 	url = https://github.com/chenshuo/muduo.git
