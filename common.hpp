@@ -26,6 +26,17 @@
 #define CONNECTION_CLOSE 3
 #define CONNECTION_NOP 0
 
+#define HEART_BEAT "HARTBEAT"
+#define PUSH_DATA "PUSHDATA"
+#define INIT_KCP "INITKCP0"
+#define KCP_READY "KCPREADY"
+
+
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+
 struct packet_meta_t {
     char     dst_ip[120];
     char     src_ip[120];

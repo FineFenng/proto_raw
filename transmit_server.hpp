@@ -31,7 +31,6 @@ private:
         return count_.fetch_add(1);
     }
 
-
 public:
 
 
@@ -47,7 +46,6 @@ public:
 
     void on_connected(const TcpConnectionPtr& conn)
     {
-
 
     }
 
@@ -77,7 +75,9 @@ public:
         const size_t frame_len = sizeof(frame_header_t) + frame_payload_len;
         ikcp_send(kcb_, data, frame_len);
 
-        ikcp_update()
+
+
+
 
 
 

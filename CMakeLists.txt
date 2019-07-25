@@ -9,4 +9,4 @@ include_directories(3rd/muduo 3rd/kcp/)
 add_subdirectory(3rd/muduo)
 
 
-add_executable(pesudo_socket tcp_client_main.cpp server.cpp server.hpp common.cpp common.hpp kcp_controller.cpp kcp_controller.hpp transmit_server.cpp transmit_server.hpp)
+add_executable(pesudo_socket tcp_client_main.cpp server.cpp server.hpp common.cpp common.hpp kcp_client.cpp kcp_client.hpp transmit_server.cpp transmit_server.hpp)
