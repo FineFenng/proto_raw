@@ -4,3 +4,6 @@
 [submodule "3rd/kcp"]
 	path = 3rd/kcp
 	url = https://github.com/skywind3000/kcp.git
+[submodule "3rd/libpcap"]
+	path = 3rd/libpcap
+	url = https://github.com/the-tcpdump-group/libpcap.git
