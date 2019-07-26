@@ -10,10 +10,9 @@
 #include <muduo/net/EventLoop.h>
 #include <muduo/net/InetAddress.h>
 
-#include <pcap.h>
-#include <Pcap++/header/PcapLiveDeviceList.h>
-#include <Packet++/header/RawPacket.h>
-#include <Packet++/header/ProtocolType.h>
+#include <PcapLiveDeviceList.h>
+#include <RawPacket.h>
+#include <ProtocolType.h>
 
 using namespace muduo::net;
 using namespace pcpp;
@@ -44,6 +43,7 @@ private:
     {
         const uint16_t port = peerAddr_.toPort();
         portFilter_ = new PortFilter(port, pcpp::DST);
+
         protoFilter_ = new ProtoFilter(pcpp::TCP);
 
         andFilter_ = new AndFilter();
