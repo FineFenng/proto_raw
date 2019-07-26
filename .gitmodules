@@ -7,3 +7,6 @@
 [submodule "3rd/libpcap"]
 	path = 3rd/libpcap
 	url = https://github.com/the-tcpdump-group/libpcap.git
+[submodule "3rd/PcapPlusPlus"]
+	path = 3rd/PcapPlusPlus
+	url = https://github.com/seladb/PcapPlusPlus.git
