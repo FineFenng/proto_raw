@@ -10,4 +10,4 @@ add_subdirectory(3rd/muduo)
 add_subdirectory(3rd/libpcap)
 
 
-add_executable(pesudo_socket tcp_client_main.cpp server.cpp server.hpp Common.cpp Common.hpp KcpController.cpp KcpController.hpp TransServer.cpp TransServer.hpp CaptureClient.cpp CaptureClient.hpp RawSender.cpp RawSender.h PesudoController.cpp PesudoController.hpp)
+add_executable(pesudo_socket tcp_client_main.cpp server.cpp server.hpp Common.cpp Common.hpp KcpController.cpp KcpController.hpp TransServer.cpp TransServer.hpp CaptureClient.cpp CaptureClient.hpp RawSender.cpp RawSender.h PesudoController.cpp PesudoController.hpp Pcapture.cpp Pcapture.hpp)

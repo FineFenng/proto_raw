@@ -12,37 +12,36 @@
 using namespace muduo::net;
 
 
-typedef std::function<void(const char*, size_t)> SendFunc;
+typedef std::function<void(const char *, size_t)> SendFunc;
 
 class RawSender {
 
     int fd_;
-    static SendFunc s_sendFunc_;
+    InetAddress peeAddress_;
+    static SendFunc s_sendFunc;
 
 public:
 
-    explicit RawSender(int fd, const InetAddress& peerAddr);
+    explicit RawSender(const InetAddress &peerAddr);
 
-    void send(const char* data, size_t len) {
-        sendto(fd_, data, len,  );
-
+    void send(const char *data, size_t len)
+    {
+        sendto(fd_, data, len, 0, peeAddress_.getSockAddr(), sizeof(struct sockaddr));
     }
 
-
-    static void setSendFunc(const SendFunc& sendFunc) {
-        s_sendFunc_ = sendFunc;
+    static void setSendFunc(const SendFunc &sendFunc)
+    {
+        s_sendFunc = sendFunc;
     }
-
-
-    static void onOutput(const char* data, size_t len) {
-        if (s_sendFunc_ != nullptr) {
-            s_sendFunc_(data, len);
+    static void onOutput(const char *data, size_t len)
+    {
+        if (s_sendFunc != nullptr) {
+            s_sendFunc(data, len);
         }
     }
 };
 
-SendFunc RawSender::s_sendFunc_ = nullptr;
-
+SendFunc RawSender::s_sendFunc = nullptr;
 
 
 #endif //PESUDO_SOCKET_RAWSENDER_H
