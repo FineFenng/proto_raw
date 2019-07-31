@@ -10,6 +10,10 @@
 #include <muduo/net/EventLoop.h>
 #include <muduo/net/TcpServer.h>
 
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+
 using namespace muduo;
 using namespace muduo::net;
 
@@ -36,24 +40,16 @@ class TransServer {
 
 public:
     explicit TransServer(EventLoop *loop, const InetAddress &addr)
-            : server_(loop, addr, "TransServer", TcpServer::kReusePort) {
+            : server_(loop, addr, "TransServer", TcpServer::kReusePort)
+    {
         server_.setMessageCallback(
-                std::bind(
-                        &TransServer::onReadable,
-                        this,
-                        std::placeholders::_1,
-                        std::placeholders::_2,
-                        std::placeholders::_3));
-
+                std::bind(&TransServer::onReadable, this, _1, _2, _3));
 
     }
 
 
     void onReadable(const TcpConnectionPtr &conn, Buffer *buf, Timestamp ts)
     {
-
-
-
 
 
     }

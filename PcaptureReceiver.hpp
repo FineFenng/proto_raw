@@ -2,12 +2,12 @@
 // Created by feng_c on 2019/7/31.
 //
 
-#ifndef PESUDO_SOCKET_PCAPTURE_HPP
-#define PESUDO_SOCKET_PCAPTURE_HPP
+#ifndef PESUDO_SOCKET_PCAPTURERECEIVER_HPP
+#define PESUDO_SOCKET_PCAPTURERECEIVER_HPP
 
 #include <pcap.h>
 
-class Pcapture {
+class PcaptureReceiver {
 
     static char *s_dev;
     static pcap_t *s_handle;
@@ -30,4 +30,4 @@ class Pcapture {
 };
 
 
-#endif //PESUDO_SOCKET_PCAPTURE_HPP
+#endif //PESUDO_SOCKET_PCAPTURERECEIVER_HPP
