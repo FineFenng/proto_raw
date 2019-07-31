@@ -13,14 +13,12 @@
 using namespace muduo;
 using namespace muduo::net;
 
-struct pesudo_hdr
-{
+struct pesudo_hdr {
 
 
 };
 
-struct pesudo_meta
-{
+struct pesudo_meta {
     char dst_ip[128];
     char src_ip[120];
     uint16_t dst_port;
@@ -31,33 +29,28 @@ struct pesudo_meta
 
 struct address_t;
 
-class reactor;
 
-
-class transmit_server
-{
+class TransServer {
     TcpServer server_;
-
-private:
 
 
 public:
-    explicit transmit_server(EventLoop* loop, const InetAddress& addr)
-            : server_(loop, addr, "transmit_server", TcpServer::kReusePort)
-    {
-        server_.setMessageCallback(std::bind(&transmit_server::on_readable, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-
+    explicit TransServer(EventLoop *loop, const InetAddress &addr)
+            : server_(loop, addr, "TransServer", TcpServer::kReusePort) {
+        server_.setMessageCallback(
+                std::bind(
+                        &TransServer::onReadable,
+                        this,
+                        std::placeholders::_1,
+                        std::placeholders::_2,
+                        std::placeholders::_3));
 
 
     }
 
 
-
-    void on_readable(const TcpConnectionPtr& conn, Buffer* buf, Timestamp ts)
+    void onReadable(const TcpConnectionPtr &conn, Buffer *buf, Timestamp ts)
     {
-
-
-
 
 
 

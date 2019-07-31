@@ -2,8 +2,8 @@
 // Created by fengchao on 2019/7/24.
 //
 
-#ifndef PESUDO_SOCKET_KCP_CLIENT_HPP
-#define PESUDO_SOCKET_KCP_CLIENT_HPP
+#ifndef PESUDO_SOCKET_KCPCONTROLLER_HPP
+#define PESUDO_SOCKET_KCPCONTROLLER_HPP
 
 #include <unistd.h>
 #include <ikcp.h>
@@ -15,12 +15,11 @@
 #include <functional>
 
 #include <muduo/net/InetAddress.h>
-#include "common.hpp"
+#include "Common.hpp"
 
 using namespace muduo::net;
 
-struct psd_tcp_header_t
-{
+struct psd_tcp_header_t {
     uint32_t src_ip;
     uint32_t dst_ip;
     char phold;
@@ -28,8 +27,7 @@ struct psd_tcp_header_t
     uint16_t len;
 };
 
-uint16_t checksum(const uint16_t* addr, int byte_count)
-{
+uint16_t checksum(const uint16_t *addr, int byte_count) {
     int32_t sum = 0;
     while (byte_count > 1) {
         sum += *addr;
@@ -51,25 +49,22 @@ uint16_t checksum(const uint16_t* addr, int byte_count)
 }
 
 
-typedef std::function<void()> user_cb_t;
-typedef std::function<int(const char* buff, int len, struct ikcpb* kcb, void* user)> out_cb_t;
+class KcpController {
 
-
-class kcp_client
-{
-
-    ikcpcb* kcp_;
-    user_cb_t user_cb_;
-    out_cb_t out_cb_;
-
-    static packet_meta_t meta_;
-
+    static ikcpcb *s_kcp;
+    static PacketMeta s_meta_;
+    static OutputCallback s_outputCallback;
 
 private:
 
-    static int on_output(const char* buf, int len, ikcpcb* kcp, void* user)
-    {
-        char* send_data = static_cast<char*>(malloc(len + 8));
+    static int onOutput(const char *buf, int len, ikcpcb *kcp, void *user) {
+
+        if (s_outputCallback != nullptr) {
+            s_outputCallback(buf, len);
+        }
+
+
+        char *send_data = static_cast<char *>(malloc(len + 8));
         memcpy(send_data, PUSH_DATA, 8);
         memcpy(send_data + 8, buf, len);
 
@@ -80,7 +75,7 @@ private:
         /* encrypt */
 
 
-        struct ip* ip_header = reinterpret_cast<struct ip*>(datagram);
+        struct ip *ip_header = reinterpret_cast<struct ip *>(datagram);
         ip_header->ip_v = 4;
         ip_header->ip_hl = 5;
         ip_header->ip_tos = 0;
@@ -94,7 +89,7 @@ private:
         inet_aton(meta_.dst_ip, &ip_header->ip_dst);
 
 
-        struct tcphdr* tcp_header = reinterpret_cast<struct tcphdr*>(datagram + sizeof(struct ip));
+        struct tcphdr *tcp_header = reinterpret_cast<struct tcphdr *>(datagram + sizeof(struct ip));
 
         tcp_header->th_sport = htons(meta_.src_port);
         tcp_header->th_dport = htons(meta_.dst_port);
@@ -121,38 +116,38 @@ private:
 
         const size_t psd_tcp_msg_len = sizeof(struct psd_tcp_header_t) + tcp_msg_len;
 
-        char* check_sum_data = static_cast<char*>(malloc(psd_tcp_msg_len));
+        char *check_sum_data = static_cast<char *>(malloc(psd_tcp_msg_len));
         memcpy(check_sum_data, &psd_tcp_header, sizeof(struct psd_tcp_header_t));
         memcpy(check_sum_data + sizeof(struct psd_tcp_header_t), &tcp_header, tcp_msg_len);
-        tcp_header->th_sum = checksum(reinterpret_cast<uint16_t*>(check_sum_data), psd_tcp_msg_len);
+        tcp_header->th_sum = checksum(reinterpret_cast<uint16_t *>(check_sum_data), psd_tcp_msg_len);
         free(check_sum_data);
 
-        ip_header->ip_sum = checksum(reinterpret_cast<uint16_t*>(datagram), sizeof(struct ip));
-
+        ip_header->ip_sum = checksum(reinterpret_cast<uint16_t *>(datagram), sizeof(struct ip));
 
     }
 
 
 public:
 
-    kcp_client(const InetAddress& server_addr, const InetAddress& listen_addr)
-    {
-
+    static void initKcpController() {
+        s_kcp = ikcp_create(0, nullptr);
+        if (s_kcp == nullptr) {
+            /* TODO */
+        }
+        s_kcp->output = onOutput;
     }
 
-    static void set_packet_meta(const InetAddress& server_addr, const InetAddress& listen_addr)
-    {
-
+    static void setOutputCallback(const OutputCallback &cb) {
+        s_outputCallback = cb;
     }
 
 
-    ~kcp_client()
-    {
-        ikcp_release(kcp_);
+    ~KcpController() {
     }
-
 
 };
 
+ikcpcb *KcpController::s_kcp = nullptr;
 
-#endif //PESUDO_SOCKET_KCP_CLIENT_HPP
+
+#endif //PESUDO_SOCKET_KCPCONTROLLER_HPP

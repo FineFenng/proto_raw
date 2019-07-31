@@ -10,16 +10,10 @@
 #include <muduo/net/EventLoop.h>
 #include <muduo/net/InetAddress.h>
 
-#include <PcapLiveDeviceList.h>
-#include <RawPacket.h>
-#include <ProtocolType.h>
-
 using namespace muduo::net;
-using namespace pcpp;
 
-static void onPacketArrives(RawPacket* packet, PcapLiveDevice* dev, void* cookie) {
-
-
+static void onPacketArrives(RawPacket* packet, PcapLiveDevice* dev, void* cookie)
+{
 
 
 
@@ -27,17 +21,8 @@ static void onPacketArrives(RawPacket* packet, PcapLiveDevice* dev, void* cookie
 
 class CaptureClient
 {
-    EventLoop* loop_;
-    InetAddress peerAddr_;
-    Channel* chan_;
-
-    PcapLiveDevice* dev_;
-    PortFilter* portFilter_;
-    ProtoFilter* protoFilter_;
-    AndFilter* andFilter_;
-
+    std::string filter_str_;
 private:
-
 
     void setFilter()
     {
@@ -57,32 +42,13 @@ private:
 
 
 
-
-
-
-
 public:
-    CaptureClient(EventLoop* loop, const InetAddress& peer_addr)
-    : loop_(loop)
-    , peerAddr_(peer_addr)
-    , chan_()
-    {
+    explicit CaptureClient(EventLoop* loop, const std::string& filter_str)
+    : filter_str_(filter_str)
+    { }
 
-
-
-
-    }
 
     void initPcapDev() {
-        const std::string ip = peerAddr_.toIp();
-        dev_ = PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(ip.c_str());
-        if (dev_ == nullptr) {
-           /* TODO */
-        }
-
-        if (!dev_->open()) {
-            /* TODO */
-        }
 
 
     }

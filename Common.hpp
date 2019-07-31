@@ -37,28 +37,30 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 
-struct packet_meta_t {
+typedef void(* OutputCallback)(const char* data, size_t len);
+
+struct PacketMeta {
     char     dst_ip[120];
     char     src_ip[120];
     uint16_t dst_port;
     uint16_t src_port;
 };
 
-struct frame_header_t
+struct FrameHeader
 {
     uint32_t conv;
     char command;
     uint32_t len;
 };
 
-struct pesudo_tcphrd
+struct PesudoTcpHeader
 {
 
 };
 
 
 
-struct pesudo_iphdr
+struct PesudoIpHeader
 {
 
 };
@@ -83,7 +85,7 @@ struct address_t {
 
 void build_packet_meta(const address_t& dst_addr,
                        const address_t& src_addr,
-                       struct packet_meta_t* meta) {
+                       struct PacketMeta* meta) {
     strcpy(meta->dst_ip, dst_addr.ip);
     strcpy(meta->src_ip, src_addr.ip);
     meta->dst_port = htons(dst_addr.port);
