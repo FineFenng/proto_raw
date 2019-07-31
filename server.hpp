@@ -44,7 +44,6 @@ public:
     {
         server_.setMessageCallback(
                 std::bind(&TransServer::onReadable, this, _1, _2, _3));
-
     }
 
 
