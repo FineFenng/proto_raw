@@ -2,8 +2,8 @@
 // Created by feng_c on 2019/7/31.
 //
 
-#ifndef PESUDO_SOCKET_PCAPTURERECEIVER_HPP
-#define PESUDO_SOCKET_PCAPTURERECEIVER_HPP
+#ifndef PESUDO_SOCKET_TCPCAPTURER_HPP
+#define PESUDO_SOCKET_TCPCAPTURER_HPP
 
 #include <string>
 
@@ -12,9 +12,12 @@
 #include <pcap.h>
 #include <muduo/base/Logging.h>
 
+#include "Common.hpp"
+
 /* Ethernet addresses are 6 bytes */
 #define ETHER_ADDR_LEN	6
 #define SIZE_ETHERNET 14
+
 
 /* Ethernet header */
 struct sniff_ethernet {
@@ -77,11 +80,12 @@ struct pcap_pkthdr {
 */
 
 
-class PcaptureReceiver {
+class TcpCapturer {
 
     static char* s_dev;
     static pcap_t* s_handle;
     static struct bpf_program* s_fp;
+
 
 private:
     static void deinit()
@@ -97,7 +101,7 @@ private:
     }
 
 public:
-    static void _doParsePacker(u_char* args, const struct pcap_pkthdr* header, const u_char* packet)
+    static void onGrapedPacket(u_char* args, const struct pcap_pkthdr* header, const u_char* packet)
     {
 
         const auto* ethernet = reinterpret_cast<const struct sniff_ethernet*>(packet);
@@ -114,44 +118,62 @@ public:
             return;
         }
 
+        const uint8_t flags = tcp->th_flags;
+        if (flags & TH_SYN) {
+            uint32_t seq = tcp->th_seq;
+            struct PacketContext p_ctx;
+            bzero(&p_ctx, sizeof(struct PacketContext));
+
+            p_ctx.seq = 1;
+            p_ctx.ack = 1;
+            p_ctx.dst_ip = ntohl(ip->ip_src.s_addr);
+            p_ctx.src_ip = ntohl(ip->ip_dst.s_addr);
+            p_ctx.dst_port = ntohs(tcp->th_sport);
+            p_ctx.src_port = ntohs(tcp->th_dport);
+            LOG_INFO << "Sync segment and seq equal <" << seq << ">";
+
+
+
+
+
+
+
+            return;
+
+        }
+
+
+
         const uint8_t* payload = packet +  SIZE_ETHERNET + ip_header_len + tcp_header_len;
 
 
 
 
-
-
-
-
-
     }
-
 
     static void _doGrapInLoop()
     {
-        pcap_loop(s_handle, 0, &PcaptureReceiver::_doParsePacker, nullptr);
+        pcap_loop(s_handle, 0, &TcpCapturer::, nullptr);
     }
-
-
 
     static void init(const std::string& filter_exp)
     {
         char errbuff[PCAP_ERRBUF_SIZE];
         char* dev = pcap_lookupdev(errbuff);
         if (dev == nullptr) {
-            LOG_ERROR << "couldn't find default device for <" << errbuff << ">";
+            LOG_ERROR << "Couldn't find default device for <" << errbuff << ">";
             return;
         }
         s_dev = dev;
 
         pcap_t* handle = pcap_open_live(s_dev, BUFSIZ, false, 0, errbuff);
         if (handle == nullptr) {
-            LOG_ERROR << "couldn't open device <" << dev << "> for <" << errbuff << ">";
+            LOG_ERROR << "Couldn't open device <" << dev << "> for <" << errbuff << ">";
             return;
         }
         s_handle = handle;
 
-        LOG_INFO << "open device <" << dev << "> succeed";
+        LOG_INFO << "Open device <" << dev << "> succeed";
 
         s_fp = static_cast<struct bpf_program*>(malloc(sizeof(struct bpf_program)));
         memset(s_fp, 0, sizeof(struct bpf_program));
@@ -164,7 +186,7 @@ public:
         if (re == -1) {
             free(s_fp);
             pcap_close(s_handle);
-            LOG_ERROR << "couldn't get netmask for device <" << dev << ">";
+            LOG_ERROR << "Couldn't get netmask for device <" << dev << ">";
             return;
         }
 
@@ -172,7 +194,7 @@ public:
         if (re == -1) {
             free(s_fp);
             pcap_close(s_handle);
-            LOG_ERROR << "couldn't parse filter "
+            LOG_ERROR << "Couldn't parse filter "
                          "<" << filter_exp << "> for "
                                               "<" << pcap_geterr(s_handle) << ">";
             return;
@@ -182,13 +204,13 @@ public:
         if (re == -1) {
             free(s_fp);
             pcap_close(s_handle);
-            LOG_ERROR << "couldn't install filter "
+            LOG_ERROR << "Couldn't install filter "
                          "<" << filter_exp << "> for "
                                               "<" << pcap_geterr(s_handle) << ">";
             return;
         }
-        LOG_INFO << "init pcap succeed";
-        std::atexit(&PcaptureReceiver::deinit);
+        LOG_INFO << "Init pcap succeed";
+        std::atexit(&TcpCapturer::deinit);
     }
 
     static void doGrapPacket()
@@ -202,8 +224,8 @@ public:
 
 };
 
-char* PcaptureReceiver::s_dev = nullptr;
-pcap_t* PcaptureReceiver::s_handle = nullptr;
-struct bpf_program* PcaptureReceiver::s_fp = nullptr;
+char* TcpCapturer::s_dev = nullptr;
+pcap_t* TcpCapturer::s_handle = nullptr;
+struct bpf_program* TcpCapturer::s_fp = nullptr;
 
-#endif //PESUDO_SOCKET_PCAPTURERECEIVER_HPP
+#endif //PESUDO_SOCKET_TCPCAPTURER_HPP

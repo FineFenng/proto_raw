@@ -34,7 +34,7 @@ private:
 
 public:
 
-    explicit TransServer(EventLoop* loop, ikcpcb* kcb, const InetAddress& addr)
+    explicit TransServer(EventLoop* loop, const InetAddress& addr)
             : server_(loop, addr, "TransServer", TcpServer::kReusePort)
             , count_(0)
     {

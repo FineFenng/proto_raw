@@ -6,8 +6,9 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(3rd/muduo 3rd/kcp/)
 
+add_subdirectory(3rd/muduo)
 
-add_executable(pesudo_socket
+add_executable(proto_raw
         tcp_client_main.cpp
         server.cpp
         server.hpp
@@ -23,5 +24,6 @@ add_executable(pesudo_socket
         RawSender.h
         PesudoController.cpp
         PesudoController.hpp
-        PcaptureReceiver.cpp
-        PcaptureReceiver.hpp)
+        TcpCapturer.cpp
+        TcpCapturer.hpp TransClient.cpp TransClient.h)
+

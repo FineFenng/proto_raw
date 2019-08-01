@@ -52,7 +52,7 @@ uint16_t checksum(const uint16_t *addr, int byte_count) {
 class KcpController {
 
     static ikcpcb *s_kcp;
-    static PacketMeta s_meta_;
+    static PacketContext s_meta_;
     static OutputCallback s_outputCallback;
 
 private:

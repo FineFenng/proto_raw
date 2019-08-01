@@ -39,11 +39,13 @@
 
 typedef void(* OutputCallback)(const char* data, size_t len);
 
-struct PacketMeta {
-    char     dst_ip[120];
-    char     src_ip[120];
+struct PacketContext {
+    uint32_t dst_ip;
+    uint32_t src_ip;
     uint16_t dst_port;
     uint16_t src_port;
+    uint32_t seq;
+    uint32_t ack;
 };
 
 struct FrameHeader
@@ -85,7 +87,7 @@ struct address_t {
 
 void build_packet_meta(const address_t& dst_addr,
                        const address_t& src_addr,
-                       struct PacketMeta* meta) {
+                       struct PacketContext* meta) {
     strcpy(meta->dst_ip, dst_addr.ip);
     strcpy(meta->src_ip, src_addr.ip);
     meta->dst_port = htons(dst_addr.port);
